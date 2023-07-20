@@ -49,32 +49,37 @@ function App() {
   )
 }
 
-function List() {
-  return (
-    <ul>
-    {list.map(function (item) {
-      return (
-        <li key={item.objectID}>
-          <span>
-            <a href={item.url}>{item.title}</a>
-          </span>
-          <span>{item.author}</span>
-          <span>{item.num_comments}</span>
-          <span>{item.points}</span>
-        </li>
-      )
-    })}
-  </ul>
-
-  )
-}
-
 function Search() {
   return (
     <div>
       <label htmlFor='search'>Search: </label>
       <input id='search' type='text' />
     </div>
+  )
+}
+
+function List() {
+  return (
+    <ul>
+    {list.map(function (item) {
+      return (
+        <Item key={item.objectID} url={item.url} title={item.title} author={item.author} numberOfComments={item.num_comments} points={item.points}/>
+      )
+    })}
+  </ul>
+  )
+}
+
+function Item({url, title, author, numberOfComments, points}) {
+  return (
+    <li>
+      <span>
+        <a href={url}>{title}</a>
+      </span>
+      <span>{author}</span>
+      <span>{numberOfComments}</span>
+      <span>{points}</span>
+    </li>
   )
 }
 
