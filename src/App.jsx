@@ -17,6 +17,22 @@ const list = [
     points: 5,
     objectID: 1,
   },
+  {
+    title: 'TanStack Query',
+    url: 'https://tanstack.com/query/v3/',
+    author: 'Tanner Linsley',
+    num_comments: 4,
+    points: 6,
+    objectID: 2,
+  },
+  {
+    title: 'Next.js',
+    url: 'https://nextjs.org/',
+    author: 'Dijon Musters',
+    num_comments: 8,
+    points: 3,
+    objectID: 3,
+  },
 ];
 
 function App() {
