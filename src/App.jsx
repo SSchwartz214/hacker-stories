@@ -1,6 +1,6 @@
 import * as React from 'react'
 
-const list = [
+const list1 = [
   {
     title: 'React',
     url: 'https://reactjs.org/',
@@ -35,8 +35,42 @@ const list = [
   },
 ];
 
-function App() {
-  return (
+const list2 = [
+  {
+    title: 'React2',
+    url: 'https://reactjs.org/',
+    author: 'Jordan Walke',
+    num_comments: 3,
+    points: 4,
+    objectID: 0,
+  },
+  {
+    title: 'Redux2',
+    url: 'https://redux.js.org/',
+    author: 'Dan Abramov, Andrew Clark',
+    num_comments: 2,
+    points: 5,
+    objectID: 1,
+  },
+  {
+    title: 'TanStack Query2',
+    url: 'https://tanstack.com/query/v3/',
+    author: 'Tanner Linsley',
+    num_comments: 4,
+    points: 6,
+    objectID: 2,
+  },
+  {
+    title: 'Next.js2',
+    url: 'https://nextjs.org/',
+    author: 'Dijon Musters',
+    num_comments: 8,
+    points: 3,
+    objectID: 3,
+  },
+];
+
+const App = () => (
     <div>
       <h1>My Hacker Stories</h1>
 
@@ -44,34 +78,28 @@ function App() {
 
       <hr />
 
-      <List />
+      <List list={list1} />
+      <List list={list2}/>
     </div>
-  )
-}
+)
 
-function Search() {
-  return (
+
+const Search = () => (
     <div>
       <label htmlFor='search'>Search: </label>
       <input id='search' type='text' />
     </div>
-  )
-}
+)
 
-function List() {
-  return (
+const List = ({list}) => (
     <ul>
-    {list.map(function (item) {
-      return (
+    {list.map((item) => (
         <Item key={item.objectID} url={item.url} title={item.title} author={item.author} numberOfComments={item.num_comments} points={item.points}/>
-      )
-    })}
+    ))}
   </ul>
-  )
-}
+)
 
-function Item({url, title, author, numberOfComments, points}) {
-  return (
+const Item = ({url, title, author, numberOfComments, points}) => (
     <li>
       <span>
         <a href={url}>{title}</a>
@@ -80,7 +108,6 @@ function Item({url, title, author, numberOfComments, points}) {
       <span>{numberOfComments}</span>
       <span>{points}</span>
     </li>
-  )
-}
+)
 
 export default App
