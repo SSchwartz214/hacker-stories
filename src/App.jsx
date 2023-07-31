@@ -1,5 +1,4 @@
 import * as React from 'react'
-// import { useEffect } from 'react';
 
 const App = () => {
   const stories = [
@@ -49,7 +48,7 @@ const App = () => {
     <div>
       <h1>My Hacker Stories</h1>
 
-      <Search onSearch={handleSearch} />
+      <Search search={searchTerm} onSearch={handleSearch} />
 
       <hr />
 
@@ -59,11 +58,11 @@ const App = () => {
 }
 
 
-const Search = ({onSearch}) => {
+const Search = ({search, onSearch}) => {
   return (
     <div>
       <label htmlFor='search'>Search: </label>
-      <input id='search' type='text' onChange={onSearch} />
+      <input id='search' type='text' value={search} onChange={onSearch} />
     </div>
   )
 }
