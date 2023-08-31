@@ -1,16 +1,5 @@
 import * as React from 'react'
 
-const useStorageState = (key, initialState) => {
-  const [value, setValue] = React.useState(
-    localStorage.getItem(key) ?? initialState
-  )
-
-  React.useEffect(() => {
-    localStorage.setItem(key, value)
-  }, [value, key])
-
-  return [value, setValue]
-}
 
 const initialStories = [
   {
@@ -47,13 +36,43 @@ const initialStories = [
   },
 ]
 
-const App = () => {
-  const [stories, setStories] = React.useState(initialStories)
+const getAsyncStories = () =>
+  new Promise((resolve) =>
+      setTimeout(
+      () => resolve({ data: {stories: initialStories } }),
+      2000
+    )
+  )
 
+const useStorageState = (key, initialState) => {
+  const [value, setValue] = React.useState(
+    localStorage.getItem(key) ?? initialState
+  )
+
+  React.useEffect(() => {
+    localStorage.setItem(key, value)
+  }, [value, key])
+
+  return [value, setValue]
+}
+
+const App = () => {
   const [searchTerm, setSearchTerm] = useStorageState('search', 'React')
+
+  const [stories, setStories] = React.useState([])
+  const [isLoading, setIsLoading] = React.useState(false)
+  const [isError, setIsError] = React.useState(false)
 
   React.useEffect(()=> {
     localStorage.setItem('search', searchTerm)
+    setIsLoading(true)
+
+    getAsyncStories().then((result) => {
+      setStories(result.data.stories)
+      setIsLoading(false)
+    } ).catch(() => {
+      setIsError(true)
+    })
   }, [searchTerm])
 
   const handleSearch = (event) => {
@@ -85,7 +104,12 @@ const App = () => {
 
       <hr />
 
-      <List list={searchedStories} onRemoveItem={handleRemoveStory} />
+      {isError && <p>Something went wrong ...</p>}
+      {isLoading ? (
+        <p>Loading ...</p>
+      ) : (
+        <List list={searchedStories} onRemoveItem={handleRemoveStory} />
+      )}
     </div>
   )
 }
