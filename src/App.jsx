@@ -44,6 +44,22 @@ const getAsyncStories = () =>
     )
   )
 
+  const setStories = 'SET_STORIES'
+  const removeStory = 'REMOVE_STORY'
+
+  const storiesReducer = (state, action) => {
+    switch (action.type) {
+      case setStories:
+        return action.payload
+      case removeStory:
+        return state.filter(
+          (story) => (action.payload.objectID !== story.objectID)
+        )
+    default:
+      throw new Error()
+    }
+  }
+
 const useStorageState = (key, initialState) => {
   const [value, setValue] = React.useState(
     localStorage.getItem(key) ?? initialState
@@ -59,16 +75,19 @@ const useStorageState = (key, initialState) => {
 const App = () => {
   const [searchTerm, setSearchTerm] = useStorageState('search', 'React')
 
-  const [stories, setStories] = React.useState([])
+  const [stories, dispatchStories] = React.useReducer(storiesReducer, [])
   const [isLoading, setIsLoading] = React.useState(false)
   const [isError, setIsError] = React.useState(false)
 
-  React.useEffect(()=> {
+  React.useEffect(() => {
     localStorage.setItem('search', searchTerm)
     setIsLoading(true)
 
     getAsyncStories().then((result) => {
-      setStories(result.data.stories)
+      dispatchStories({
+        type: setStories,
+        payload: result.data.stories
+      })
       setIsLoading(false)
     } ).catch(() => {
       setIsError(true)
@@ -82,10 +101,10 @@ const App = () => {
   const searchedStories = stories.filter((story) => story.title.toLowerCase().includes(searchTerm.toLowerCase()))
 
   const handleRemoveStory = (item) => {
-    const newStories = stories.filter(
-      (story) => (item.objectID !== story.objectID)
-    )
-    setStories(newStories)
+    dispatchStories({
+      type: removeStory,
+      payload: item
+    })
   }
 
 
