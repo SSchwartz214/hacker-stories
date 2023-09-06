@@ -1,86 +1,42 @@
 import * as React from 'react'
 
+const STORIES_FETCH_INIT = 'STORIES_FETCH_INIT'
+const STORIES_FETCH_SUCCESS = 'STORIES_FETCH_SUCCESS'
+const STORIES_FETCH_FAILURE = 'STORIES_FETCH_FAILURE'
+const REMOVE_STORY = 'REMOVE_STORY'
 
-const initialStories = [
-  {
-    title: 'React',
-    url: 'https://reactjs.org/',
-    author: 'Jordan Walke',
-    num_comments: 3,
-    points: 4,
-    objectID: 0,
-  },
-  {
-    title: 'Redux',
-    url: 'https://redux.js.org/',
-    author: 'Dan Abramov, Andrew Clark',
-    num_comments: 2,
-    points: 5,
-    objectID: 1,
-  },
-  {
-    title: 'TanStack Query',
-    url: 'https://tanstack.com/query/v3/',
-    author: 'Tanner Linsley',
-    num_comments: 4,
-    points: 6,
-    objectID: 2,
-  },
-  {
-    title: 'Next.js',
-    url: 'https://nextjs.org/',
-    author: 'Dijon Musters',
-    num_comments: 8,
-    points: 3,
-    objectID: 3,
-  },
-]
-
-const getAsyncStories = () =>
-  new Promise((resolve) =>
-      setTimeout(
-        () => resolve({ data: {stories: initialStories } }),
-        2000
-      )
-  )
-
-  const STORIES_FETCH_INIT = 'STORIES_FETCH_INIT'
-  const STORIES_FETCH_SUCCESS = 'STORIES_FETCH_SUCCESS'
-  const STORIES_FETCH_FAILURE = 'STORIES_FETCH_FAILURE'
-  const REMOVE_STORY = 'REMOVE_STORY'
-
-  const storiesReducer = (state, action) => {
-    switch (action.type) {
-      case STORIES_FETCH_INIT:
-        return {
-          ...state,
-          isLoading: true,
-          isError: false
-        }
-      case STORIES_FETCH_SUCCESS:
-        return {
-          ...state,
-          isLoading: false,
-          isError: false,
-          data: action.payload
-        }
-      case STORIES_FETCH_FAILURE:
-        return {
-          ...state,
-          isLoading: false,
-          isError: true,
-        }
-      case REMOVE_STORY:
-        return {
-          ...state,
-          data: state.data.filter(
-            (story) => (action.payload.objectID !== story.objectID)
-          ),
-        }
-    default:
-      throw new Error()
-    }
+const storiesReducer = (state, action) => {
+  switch (action.type) {
+    case STORIES_FETCH_INIT:
+      return {
+        ...state,
+        isLoading: true,
+        isError: false
+      }
+    case STORIES_FETCH_SUCCESS:
+      return {
+        ...state,
+        isLoading: false,
+        isError: false,
+        data: action.payload
+      }
+    case STORIES_FETCH_FAILURE:
+      return {
+        ...state,
+        isLoading: false,
+        isError: true,
+      }
+    case REMOVE_STORY:
+      return {
+        ...state,
+        data: state.data.filter(
+          (story) => (action.payload.objectID !== story.objectID)
+        ),
+      }
+  default:
+    throw new Error()
   }
+}
 
 const useStorageState = (key, initialState) => {
   const [value, setValue] = React.useState(
@@ -94,6 +50,8 @@ const useStorageState = (key, initialState) => {
   return [value, setValue]
 }
 
+const API_ENDPOINT = 'https://hn.algolia.com/api/v1/search?query='
+
 const App = () => {
   const [searchTerm, setSearchTerm] = useStorageState('search', 'React')
 
@@ -106,14 +64,16 @@ const App = () => {
     localStorage.setItem('search', searchTerm)
     dispatchStories({ type: 'STORIES_FETCH_INIT'})
 
-    getAsyncStories().then((result) => {
-      dispatchStories({
-        type: 'STORIES_FETCH_SUCCESS',
-        payload: result.data.stories
+    fetch(`${API_ENDPOINT}react`)
+      .then((response) => response.json())
+      .then((result) => {
+        dispatchStories({
+          type: 'STORIES_FETCH_SUCCESS',
+          payload: result.hits
+        })
+      } ).catch(() => {
+        dispatchStories(({ type: 'STORIES_FETCH_FAILURE'}))
       })
-    } ).catch(() => {
-      dispatchStories(({ type: 'STORIES_FETCH_FAILURE'}))
-    })
   }, [searchTerm])
 
   const handleSearch = (event) => {
